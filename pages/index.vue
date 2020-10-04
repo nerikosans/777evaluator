@@ -102,7 +102,7 @@ data () {
 
     class ParseError{
         constructor(msg){this.msg = msg;}
-        eval(){return "ParseError!" + this.msg;}
+        eval(){return "ParseError: " + this.msg;}
     }
 
     return {
@@ -129,7 +129,7 @@ data () {
                             frontier = [];
                             break;
                         case ')':
-                            if(stack.length == 0)return ParseError("開いていない括弧を閉じようとしました");
+                            if(stack.length == 0)return new ParseError("開いていない括弧を閉じようとしました");
                             var tmp = stack.pop();
                             var eq_pos = frontier.findIndex(x=>x=='=');
                             if(eq_pos == -1){
@@ -139,6 +139,7 @@ data () {
                                 if(eq_pos == 0 || eq_pos == frontier.length - 1)return new ParseError("文の端に=は置けません．");
                                 var lhs = frontier.slice(0, eq_pos);
                                 var rhs = frontier.slice(eq_pos+1);
+                                if(rhs.some(x=>x=='='))return new ParseError("=は直列に結合できません");
                                 tmp.push(new Round(new Equation(new Sentence(lhs), new Sentence(rhs))));
                             }
                             frontier = tmp;
@@ -156,6 +157,7 @@ data () {
                     console.log(lhs);
                     var lhs = frontier.slice(0, eq_pos);
                     var rhs = frontier.slice(eq_pos+1);
+                    if(rhs.some(x=>x=='='))return new ParseError("=は直列に結合できません");
                     return new Equation(new Sentence(lhs), new Sentence(rhs));
                 }
             }
