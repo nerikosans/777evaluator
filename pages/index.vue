@@ -9,10 +9,10 @@
         </form>
         <ul>
             <li>
-                <p> 元のョ米: {{expression.raw}} </p>                
+                <p> 元のョ米: {{expression.raw}} </p>
             </li>
             <li>
-                <p> 胡結果: {{expression.parse(expression.raw).eval()}} </p>                
+                <p> 胡結果: {{expression.parse(expression.raw).eval()}} </p>
             </li>
         </ul>
     </div>
@@ -27,8 +27,8 @@ data () {
             this.rhs = rhs;
         }
         eval(){
-            if(this.lhs.contents !== undefined && this.lhs.contents == 1){
-                return new Sentence(1, undefined, new Round(new Sentence([new Yu(0), new Yu(1),this.rhs,new Yu(0)])));
+            if(this.lhs.terms !== undefined && this.lhs.terms.length === 1 && this.lhs.terms[0].contents === 1){
+                return new Sentence([new Round(new Sentence([new Yu(0), new Yu(1), this.rhs, new Yu(0)]))]);
             }
             var new_lhs = this.rhs.hasTwo() ? new Yu(2): this.lhs;
             var new_rhs = this.lhs.hasTwo() ? new Yu(2): this.rhs;
@@ -145,8 +145,8 @@ data () {
                             break;
                         default:
                             return new ParseError("知らない文字:" + c);
-                    }                    
-                }                
+                    }
+                }
                 console.log(frontier);
                 if(stack.length > 0)return new ParseError("括弧が閉じきっていません．");
                 var eq_pos = frontier.findIndex(x=>x=='=');
@@ -160,7 +160,7 @@ data () {
                 }
             }
         },
-    } 
+    }
 }
 }
 </script>
