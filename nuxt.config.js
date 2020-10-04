@@ -10,5 +10,6 @@ const routerBase =
     : {}
 
 export default {
+  ssr: false,
   ...routerBase
 }
