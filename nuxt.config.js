@@ -27,5 +27,6 @@ export default {
           { hid: 'twitter:card', content: 'summary'},
         ]
       },
+    buildModules: ['@nuxt/typescript-build'],
     ...routerBase
 }
