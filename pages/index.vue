@@ -181,7 +181,7 @@ export default {
             return;
           }
 
-          if (this.raw.endsWith('^')) {
+          if (this.raw.endsWith('^^')) {
             this.raw = this.raw.slice(0, this.raw.length - 2);
             return;
           }
