@@ -244,11 +244,12 @@ export default {
                   else rice_field[rice_field.length - 1].push(token);
                 }
                 if (rice_field.length == 1)
-                  return new Round(new Sentence(rice_field[0]));
+                  tmp.push(new Round(new Sentence(rice_field[0])));
                 else
-                  return new Equation(
-                    rice_field.map(rices => new Sentence(rices))
+                  tmp.push(
+                    new Equation(rice_field.map(rices => new Sentence(rices)))
                   );
+                frontier = tmp;
                 break;
               default:
                 return new ParseError(
