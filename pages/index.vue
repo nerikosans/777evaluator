@@ -203,7 +203,7 @@ export default {
 
     return {
       expression: {
-        raw: '7=牧',
+        raw: '',
         isResultError: false,
         calc(str: string): string {
           const parseResult = this.parse(str);
