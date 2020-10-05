@@ -1,11 +1,18 @@
 <template>
   <div class="expression">
-    <form @submit.prevent>
-      <label>
-        ョ米
-        <input v-model="expression.raw" type="text" />
-      </label>
-    </form>
+    <h1 class="title">オンライン胡算器</h1>
+    <div class="display">
+      <input v-model="expression.raw" class="eq-input" type="text" />
+      <div class="hor-line" />
+      <div
+        :class="{
+          result: true,
+          'error-result': expression.isResultError,
+        }"
+      >
+        {{ expression.calc(expression.raw) }}
+      </div>
+    </div>
     <ul class="input_buttons">
       <li>
         <button class="ui_button" @click="expression.raw += '7'">7</button>
@@ -28,18 +35,17 @@
     </ul>
     <ul class="control_buttons">
       <li>
-        <button class="ui_button" @click="expression.backspace()">Del</button>
+        <button
+          class="ui_button control_button"
+          @click="expression.backspace()"
+        >
+          Del
+        </button>
       </li>
       <li>
-        <button class="ui_button" @click="expression.clear()">Clear</button>
-      </li>
-    </ul>
-    <ul>
-      <li>
-        <p>元のョ米: {{ expression.raw }}</p>
-      </li>
-      <li>
-        <p>胡結果: {{ expression.calc(expression.raw) }}</p>
+        <button class="ui_button control_button" @click="expression.clear()">
+          Clear
+        </button>
       </li>
     </ul>
   </div>
@@ -52,7 +58,7 @@ export default {
       eval(): Rice;
       hasTwo(): boolean;
       lift(): Rice;
-      toString(): String;
+      toString(): string;
     }
     class Equation implements Rice {
       rices: Rice[];
@@ -185,8 +191,8 @@ export default {
     }
 
     class ParseError {
-      msg: String;
-      constructor(msg: String) {
+      msg: string;
+      constructor(msg: string) {
         this.msg = msg;
       }
 
@@ -197,9 +203,13 @@ export default {
 
     return {
       expression: {
-        raw: '',
-        calc(str: String): String {
-          const expr = this.parse(str).eval().toString();
+        raw: '7=牧',
+        isResultError: false,
+        calc(str: string): string {
+          const parseResult = this.parse(str);
+          const expr = parseResult.eval().toString();
+          this.isResultError = parseResult instanceof ParseError;
+
           if (expr.includes('D')) {
             return '(´∀｀*)ｳﾌﾌ';
           } else {
@@ -319,31 +329,108 @@ export default {
 </script>
 
 <style scoped>
+.expression {
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+}
+
+.title {
+  margin-top: 40px;
+  text-align: center;
+  font-family: 'Noto Sans JP', sans-serif;
+  color: #777;
+  font-size: 24px;
+}
+
+.display {
+  width: 400px;
+  max-width: 80vw;
+  margin: 40px auto 0;
+}
+
+.eq-input {
+  display: block;
+  margin: 0 auto;
+  border: 1px solid #eee;
+  text-align: center;
+  height: 40px;
+  font-size: 19px;
+  line-height: 40px;
+  color: #777;
+  width: 80%;
+}
+
+.hor-line {
+  border-top: 1px solid #777;
+  margin: 20px 0 17px;
+  width: 100%;
+}
+
+.result {
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+  height: 40px;
+  font-size: 19px;
+  line-height: 20px;
+  padding: 10px 0;
+  color: #777;
+  width: 80%;
+}
+
+.error-result {
+  color: #cc6666;
+  font-size: 0.75em;
+}
+
 .input_buttons {
   list-style: none;
 
-  width: 300px;
+  width: 350px;
+  max-width: 75vw;
+
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
+  flex-wrap: wrap;
+  margin: 30px auto 0;
+  padding: 0;
 }
 
-.input_buttons > li,
+.input_buttons > li {
+  flex: 1 0 30%;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
 .control_buttons > li {
-  margin: 0 10px;
+  flex: 1 0 50%;
+  padding: 6px;
+  box-sizing: border-box;
 }
 
 .ui_button {
   padding: 0 10px;
-  height: 30px;
+  width: 100%;
+  border: none;
+  height: 70px;
+  background-color: #eee;
+  color: #777;
+  font-size: 20px;
+}
+
+.control_button {
+  height: 45px;
 }
 
 .control_buttons {
   list-style: none;
 
-  width: 300px;
+  width: 350px;
+  max-width: 75vw;
+
   display: flex;
-  flex-direction: row;
-  justify-content: left;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin: 25px auto 0;
+  padding: 0;
 }
 </style>
