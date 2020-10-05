@@ -12,8 +12,5 @@ const routerBase =
 export default {
     ssr:false,
     target: 'static',
-    //    ...routerBase
-    router:{
-        base: '/777evaluator/'
-    }
+    ...routerBase
 }

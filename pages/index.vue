@@ -102,7 +102,7 @@ data () {
 
     class ParseError{
         constructor(msg){this.msg = msg;}
-        eval(){return "ParseError: " + this.msg;}
+        eval(){return this.msg;}
     }
 
     return {
@@ -129,35 +129,33 @@ data () {
                             frontier = [];
                             break;
                         case ')':
-                            if(stack.length == 0)return new ParseError("開いていない括弧を閉じようとしました");
+                            if(stack.length == 0)return new ParseError("Parse Error: 丸はしっかり閉じましょう");
                             var tmp = stack.pop();
                             var eq_pos = frontier.findIndex(x=>x=='=');
                             if(eq_pos == -1){
                                 tmp.push(new Round(new Sentence(frontier)));
                             }
                             else{
-                                if(eq_pos == 0 || eq_pos == frontier.length - 1)return new ParseError("文の端に=は置けません．");
                                 var lhs = frontier.slice(0, eq_pos);
                                 var rhs = frontier.slice(eq_pos+1);
-                                if(rhs.some(x=>x=='='))return new ParseError("=は直列に結合できません");
+                                if(rhs.some(x=>x=='='))return new ParseError("(´∀｀*)ｳﾌﾌ");
                                 tmp.push(new Round(new Equation(new Sentence(lhs), new Sentence(rhs))));
                             }
                             frontier = tmp;
                             break;
                         default:
-                            return new ParseError("知らない文字:" + c);
+                            return new ParseError("Parse Error:  知らない文字「" + c +"」");
                     }
                 }
                 console.log(frontier);
-                if(stack.length > 0)return new ParseError("括弧が閉じきっていません．");
+                if(stack.length > 0)return new ParseError("丸はしっかり閉じましょう");
                 var eq_pos = frontier.findIndex(x=>x=='=');
                 if(eq_pos == -1)return new Sentence(frontier);
                 else{
-                    if(eq_pos == 0 || eq_pos == frontier.length - 1)return new ParseError("文の端に=は置けません．");
                     console.log(lhs);
                     var lhs = frontier.slice(0, eq_pos);
                     var rhs = frontier.slice(eq_pos+1);
-                    if(rhs.some(x=>x=='='))return new ParseError("=は直列に結合できません");
+                    if(rhs.some(x=>x=='='))return new ParseError("(´∀｀*)ｳﾌﾌ");
                     return new Equation(new Sentence(lhs), new Sentence(rhs));
                 }
             }
