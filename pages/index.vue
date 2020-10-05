@@ -18,44 +18,47 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   data() {
-    class Equation {
-      constructor(lhs, rhs) {
-        this.lhs = lhs;
-        this.rhs = rhs;
+    interface Rice {
+      eval(): Rice;
+      hasTwo(): boolean;
+      lift(): Rice;
+      toString(): String;
+    }
+    class Equation implements Rice {
+      rices: Rice[];
+      constructor(rices: Rice[]) {
+        this.rices = rices;
       }
       eval() {
-        if (
-          this.lhs.terms !== undefined &&
-          this.lhs.terms.length === 1 &&
-          this.lhs.terms[0].contents === 1
-        ) {
+        if (this.rices.length != 2) return new Daniel();
+        var [lhs, rhs] = this.rices;
+        if (lhs.toString() == '牧') {
           return new Sentence([
-            new Round(
-              new Sentence([new Yu(0), new Yu(1), this.rhs, new Yu(0)])
-            ),
+            new Round(new Sentence([new Yu(0), new Yu(1), rhs, new Yu(0)])),
           ]);
         }
-        var new_lhs = this.rhs.hasTwo() ? new Yu(2) : this.lhs;
-        var new_rhs = this.lhs.hasTwo() ? new Yu(2) : this.rhs;
-        new_lhs = new_lhs.eval();
-        new_rhs = new_rhs.eval();
+        var new_lhs = rhs.hasTwo() ? new Yu(2) : lhs.eval();
+        var new_rhs = lhs.hasTwo() ? new Yu(2) : rhs.eval();
         return new Sentence([new_lhs, new Round(new_rhs)]);
       }
       hasTwo() {
-        return this.lhs.hasTwo() || this.rhs.hasTwo();
+        return this.rices.some(x => x.hasTwo());
       }
       lift() {
-        return new Equation(this.lhs.lift(), this.rhs.lift());
+        return new Equation(this.rices.map(x => x.lift()));
       }
       toString() {
-        return '' + this.lhs + '=' + this.rhs;
+        if (this.rices.length != 2) return new Daniel().toString();
+        var [lhs, rhs] = this.rices;
+        return '' + lhs + '=' + rhs;
       }
     }
-    class Sentence {
-      constructor(terms) {
+    class Sentence implements Rice {
+      terms: Rice[];
+      constructor(terms: Rice[]) {
         this.terms = terms;
       }
       eval() {
@@ -72,8 +75,9 @@ export default {
       }
     }
 
-    class Round {
-      constructor(inside) {
+    class Round implements Rice {
+      inside: Rice;
+      constructor(inside: Rice) {
         this.inside = inside;
       }
       eval() {
@@ -90,8 +94,9 @@ export default {
       }
     }
 
-    class Yu {
-      constructor(contents) {
+    class Yu implements Rice {
+      contents: 0 | 1 | 2;
+      constructor(contents: 0 | 1 | 2) {
         this.contents = contents;
       }
       eval() {
@@ -101,15 +106,20 @@ export default {
         return this.contents == 2;
       }
       lift() {
-        return new Yu(Math.min(this.contents + 1, 2));
+        switch (this.contents) {
+          case 0:
+            return new Yu(1);
+          case 1:
+          case 2:
+            return new Yu(2);
+        }
       }
       toString() {
-        if (this.contesnts < 0) return 'X';
         return ['7', '牧', '^^'][this.contents];
       }
     }
 
-    class Daniel {
+    class Daniel implements Rice {
       constructor() {}
       eval() {
         return this;
@@ -126,7 +136,8 @@ export default {
     }
 
     class ParseError {
-      constructor(msg) {
+      msg: String;
+      constructor(msg: String) {
         this.msg = msg;
       }
       eval() {
@@ -136,16 +147,15 @@ export default {
 
     return {
       expression: {
-        // 初期値を入れる
         raw: '',
-        calc: function (str) {
+        calc: function (str: String): String {
           var expr = this.parse(str).eval().toString();
           if (expr.includes('D')) return '(´∀｀*)ｳﾌﾌ';
           else return expr;
         },
-        parse: function (str) {
-          var stack = [];
-          var frontier = [];
+        parse: function (str: String): Rice | ParseError {
+          var stack: (Rice | '=')[][] = [];
+          var frontier: (Rice | '=')[] = [];
           var code = str
             .replace(/ /g, '')
             .replace(/7/g, '0')
@@ -154,9 +164,13 @@ export default {
           for (var c of code) {
             switch (c) {
               case '0':
+                frontier.push(new Yu(0));
+                break;
               case '1':
+                frontier.push(new Yu(1));
+                break;
               case '2':
-                frontier.push(new Yu(parseInt(c)));
+                frontier.push(new Yu(2));
                 break;
               case '=':
                 frontier.push('=');
@@ -166,29 +180,27 @@ export default {
                 frontier = [];
                 break;
               case ')':
-                if (stack.length == 0)
+                var tmp = stack.pop();
+                if (tmp === undefined)
                   return new ParseError(
                     'Parse Error: 丸はしっかり閉じましょう'
                   );
-                var tmp = stack.pop();
                 if (frontier.length == 0)
                   return new ParseError('Parse Error: 空っぽ');
                 if (frontier[0] == '=' || frontier[frontier.length - 1] == '=')
                   return new ParseError('Parse Error: 端っこに=は置けません');
-                var eq_pos = frontier.findIndex(x => x == '=');
-                if (eq_pos == -1) {
-                  tmp.push(new Round(new Sentence(frontier)));
-                } else {
-                  var lhs = frontier.slice(0, eq_pos);
-                  var rhs = frontier.slice(eq_pos + 1);
-                  if (rhs.some(x => x == '=')) return new Daniel();
-                  tmp.push(
-                    new Round(
-                      new Equation(new Sentence(lhs), new Sentence(rhs))
-                    )
-                  );
+
+                var rice_field: Rice[][] = [[]];
+                for (var token of frontier) {
+                  if (token === '=') rice_field.push([]);
+                  else rice_field[rice_field.length - 1].push(token);
                 }
-                frontier = tmp;
+                if (rice_field.length == 1)
+                  return new Round(new Sentence(rice_field[0]));
+                else
+                  return new Equation(
+                    rice_field.map(rices => new Sentence(rices))
+                  );
                 break;
               default:
                 return new ParseError(
@@ -196,7 +208,6 @@ export default {
                 );
             }
           }
-          console.log(frontier);
           if (stack.length > 0)
             return new ParseError('Parse Error: 丸はしっかり閉じましょう');
           if (
@@ -204,15 +215,14 @@ export default {
             (frontier[0] == '=' || frontier[frontier.length - 1] == '=')
           )
             return new ParseError('Parse Error: 端っこに=は置けません');
-          var eq_pos = frontier.findIndex(x => x == '=');
-          if (eq_pos == -1) return new Sentence(frontier);
-          else {
-            console.log(lhs);
-            var lhs = frontier.slice(0, eq_pos);
-            var rhs = frontier.slice(eq_pos + 1);
-            if (rhs.some(x => x == '=')) return new Daniel();
-            return new Equation(new Sentence(lhs), new Sentence(rhs));
+          var rice_field: Rice[][] = [[]];
+          for (var token of frontier) {
+            if (token == '=') rice_field.push([]);
+            else rice_field[rice_field.length - 1].push(token);
           }
+          if (rice_field.length == 1) return new Sentence(rice_field[0]);
+          else
+            return new Equation(rice_field.map(rices => new Sentence(rices)));
         },
       },
     };
