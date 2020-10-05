@@ -144,7 +144,8 @@ data () {
                         case ')':
                             if(stack.length == 0)return new ParseError("Parse Error: 丸はしっかり閉じましょう");
                             var tmp = stack.pop();
-                            if(frontier.length > 0 && (frontier[0] == '=' || frontier[frontier.length-1] == '='))return new ParseError("Parse Error: 端っこに=は置けません");                
+                            if(frontier.length == 0)return new ParseError("Parse Error: 空っぽ");
+                            if(frontier[0] == '=' || frontier[frontier.length-1] == '=')return new ParseError("Parse Error: 端っこに=は置けません");                
                             var eq_pos = frontier.findIndex(x=>x=='=');
                             if(eq_pos == -1){
                                 tmp.push(new Round(new Sentence(frontier)));
