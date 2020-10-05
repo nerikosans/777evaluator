@@ -329,7 +329,7 @@ export default {
 </script>
 
 <style scoped>
-.expression {
+* {
   font-family: 'M PLUS Rounded 1c', sans-serif;
 }
 
@@ -357,6 +357,7 @@ export default {
   line-height: 40px;
   color: #777;
   width: 80%;
+  font-weight: 300;
 }
 
 .hor-line {

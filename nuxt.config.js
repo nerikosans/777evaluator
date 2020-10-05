@@ -47,7 +47,7 @@ export default {
   modules: ['nuxt-webfontloader'],
   webfontloader: {
     google: {
-      families: ['Noto+Sans+JP', 'M+PLUS+Rounded+1c'],
+      families: ['Noto+Sans+JP', 'M+PLUS+Rounded+1c:300,400'],
     },
   },
   ...routerBase,
