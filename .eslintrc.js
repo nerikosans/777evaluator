@@ -1,5 +1,9 @@
 module.exports = {
-    extends: [
-      '@nuxtjs/eslint-config-typescript'
-    ]
+    env: {
+        es6: true,
+    },
+  extends: [
+    '@nuxtjs/eslint-config-typescript',
+    'prettier'
+  ]
 }

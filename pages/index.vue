@@ -3,41 +3,51 @@
     <form @submit.prevent>
       <label>
         ョ米
-        <input type="text" v-model="expression.raw" />
+        <input v-model="expression.raw" type="text">
       </label>
     </form>
     <ul class="input_buttons">
       <li>
-        <button class="ui_button" v-on:click="expression.raw += '7'">7</button>
+        <button class="ui_button" @click="expression.raw += '7'">
+          7
+        </button>
       </li>
       <li>
-        <button class="ui_button" v-on:click="expression.raw += '^^'">
+        <button class="ui_button" @click="expression.raw += '^^'">
           ^^
         </button>
       </li>
       <li>
-        <button class="ui_button" v-on:click="expression.raw += '牧'">
+        <button class="ui_button" @click="expression.raw += '牧'">
           牧
         </button>
       </li>
       <li>
-        <button class="ui_button" v-on:click="expression.raw += '('">(</button>
+        <button class="ui_button" @click="expression.raw += '('">
+          (
+        </button>
       </li>
       <li>
-        <button class="ui_button" v-on:click="expression.raw += ')'">)</button>
+        <button class="ui_button" @click="expression.raw += ')'">
+          )
+        </button>
       </li>
       <li>
-        <button class="ui_button" v-on:click="expression.raw += '='">=</button>
+        <button class="ui_button" @click="expression.raw += '='">
+          =
+        </button>
       </li>
     </ul>
     <ul class="control_buttons">
       <li>
-        <button class="ui_button" v-on:click="expression.backspace()">
+        <button class="ui_button" @click="expression.backspace()">
           Del
         </button>
       </li>
       <li>
-        <button class="ui_button" v-on:click="expression.clear()">Clear</button>
+        <button class="ui_button" @click="expression.clear()">
+          Clear
+        </button>
       </li>
     </ul>
     <ul>
@@ -65,27 +75,35 @@ export default {
       constructor(rices: Rice[]) {
         this.rices = rices;
       }
+
       eval() {
-        if (this.rices.length != 2) return new Daniel();
-        var [lhs, rhs] = this.rices;
-        if (lhs.toString() == '牧') {
+        if (this.rices.length !== 2) {
+          return new Daniel();
+        }
+        const [lhs, rhs] = this.rices;
+        if (lhs.toString() === '牧') {
           return new Sentence([
             new Round(new Sentence([new Yu(0), new Yu(1), rhs, new Yu(0)])),
           ]);
         }
-        var new_lhs = rhs.hasTwo() ? new Yu(2) : lhs.eval();
-        var new_rhs = lhs.hasTwo() ? new Yu(2) : rhs.eval();
-        return new Sentence([new_lhs, new Round(new_rhs)]);
+        const newLhs = rhs.hasTwo() ? new Yu(2) : lhs.eval();
+        const newRhs = lhs.hasTwo() ? new Yu(2) : rhs.eval();
+        return new Sentence([newLhs, new Round(newRhs)]);
       }
+
       hasTwo() {
         return this.rices.some(x => x.hasTwo());
       }
+
       lift() {
         return new Equation(this.rices.map(x => x.lift()));
       }
+
       toString() {
-        if (this.rices.length != 2) return new Daniel().toString();
-        var [lhs, rhs] = this.rices;
+        if (this.rices.length !== 2) {
+          return new Daniel().toString();
+        }
+        const [lhs, rhs] = this.rices;
         return '' + lhs + '=' + rhs;
       }
     }
@@ -94,15 +112,19 @@ export default {
       constructor(terms: Rice[]) {
         this.terms = terms;
       }
+
       eval() {
         return new Sentence(this.terms.map(x => x.eval()));
       }
+
       hasTwo() {
         return this.terms.some(x => x.hasTwo());
       }
+
       lift() {
         return new Sentence(this.terms.map(x => x.lift()));
       }
+
       toString() {
         return this.terms.map(x => x.toString()).join('');
       }
@@ -113,15 +135,19 @@ export default {
       constructor(inside: Rice) {
         this.inside = inside;
       }
+
       eval() {
         return this.inside.eval().lift();
       }
+
       hasTwo() {
         return this.inside.hasTwo();
       }
+
       lift() {
         return new Round(this.inside.lift());
       }
+
       toString() {
         return '(' + this.inside + ')';
       }
@@ -132,12 +158,15 @@ export default {
       constructor(contents: 0 | 1 | 2) {
         this.contents = contents;
       }
+
       eval() {
         return this;
       }
+
       hasTwo() {
-        return this.contents == 2;
+        return this.contents === 2;
       }
+
       lift() {
         switch (this.contents) {
           case 0:
@@ -147,22 +176,25 @@ export default {
             return new Yu(2);
         }
       }
+
       toString() {
         return ['7', '牧', '^^'][this.contents];
       }
     }
 
     class Daniel implements Rice {
-      constructor() {}
       eval() {
         return this;
       }
+
       hasTwo() {
         return false;
       }
+
       lift() {
         return this;
       }
+
       toString() {
         return 'D';
       }
@@ -173,6 +205,7 @@ export default {
       constructor(msg: String) {
         this.msg = msg;
       }
+
       eval() {
         return this.msg;
       }
@@ -181,10 +214,13 @@ export default {
     return {
       expression: {
         raw: '',
-        calc: function (str: String): String {
-          var expr = this.parse(str).eval().toString();
-          if (expr.includes('D')) return '(´∀｀*)ｳﾌﾌ';
-          else return expr;
+        calc(str: String): String {
+          const expr = this.parse(str).eval().toString();
+          if (expr.includes('D')) {
+            return '(´∀｀*)ｳﾌﾌ';
+          } else {
+            return expr;
+          }
         },
         backspace() {
           if (this.raw.length === 0) {
@@ -201,15 +237,15 @@ export default {
         clear() {
           this.raw = '';
         },
-        parse: function (str: String): Rice | ParseError {
-          var stack: (Rice | '=')[][] = [];
-          var frontier: (Rice | '=')[] = [];
-          var code = str
+        parse(str: String): Rice | ParseError {
+          const stack: (Rice | '=')[][] = [];
+          let frontier: (Rice | '=')[] = [];
+          const code = str
             .replace(/ /g, '')
             .replace(/7/g, '0')
             .replace(/牧/g, '1')
             .replace(/\^\^/g, '2');
-          for (var c of code) {
+          for (const c of code) {
             switch (c) {
               case '0':
                 frontier.push(new Yu(0));
@@ -228,28 +264,40 @@ export default {
                 frontier = [];
                 break;
               case ')':
-                var tmp = stack.pop();
-                if (tmp === undefined)
-                  return new ParseError(
-                    'Parse Error: 丸はしっかり閉じましょう'
-                  );
-                if (frontier.length == 0)
-                  return new ParseError('Parse Error: 空っぽ');
-                if (frontier[0] == '=' || frontier[frontier.length - 1] == '=')
-                  return new ParseError('Parse Error: 端っこに=は置けません');
+                {
+                  const tmp = stack.pop();
+                  if (tmp === undefined) {
+                    return new ParseError(
+                      'Parse Error: 丸はしっかり閉じましょう'
+                    );
+                  }
+                  if (frontier.length === 0) {
+                    return new ParseError('Parse Error: 空っぽ');
+                  }
+                  if (
+                    frontier[0] === '=' ||
+                    frontier[frontier.length - 1] === '='
+                  ) {
+                    return new ParseError('Parse Error: 端っこに=は置けません');
+                  }
 
-                var rice_field: Rice[][] = [[]];
-                for (var token of frontier) {
-                  if (token === '=') rice_field.push([]);
-                  else rice_field[rice_field.length - 1].push(token);
+                  const riceField: Rice[][] = [[]];
+                  for (const token of frontier) {
+                    if (token === '=') {
+                      riceField.push([]);
+                    } else {
+                      riceField[riceField.length - 1].push(token);
+                    }
+                  }
+                  if (riceField.length === 1) {
+                    tmp.push(new Round(new Sentence(riceField[0])));
+                  } else {
+                    tmp.push(
+                      new Equation(riceField.map(rices => new Sentence(rices)))
+                    );
+                  }
+                  frontier = tmp;
                 }
-                if (rice_field.length == 1)
-                  tmp.push(new Round(new Sentence(rice_field[0])));
-                else
-                  tmp.push(
-                    new Equation(rice_field.map(rices => new Sentence(rices)))
-                  );
-                frontier = tmp;
                 break;
               default:
                 return new ParseError(
@@ -257,21 +305,28 @@ export default {
                 );
             }
           }
-          if (stack.length > 0)
+          if (stack.length > 0) {
             return new ParseError('Parse Error: 丸はしっかり閉じましょう');
+          }
           if (
             frontier.length > 0 &&
-            (frontier[0] == '=' || frontier[frontier.length - 1] == '=')
-          )
+            (frontier[0] === '=' || frontier[frontier.length - 1] === '=')
+          ) {
             return new ParseError('Parse Error: 端っこに=は置けません');
-          var rice_field: Rice[][] = [[]];
-          for (var token of frontier) {
-            if (token == '=') rice_field.push([]);
-            else rice_field[rice_field.length - 1].push(token);
           }
-          if (rice_field.length == 1) return new Sentence(rice_field[0]);
-          else
-            return new Equation(rice_field.map(rices => new Sentence(rices)));
+          const riceField: Rice[][] = [[]];
+          for (const token of frontier) {
+            if (token === '=') {
+              riceField.push([]);
+            } else {
+              riceField[riceField.length - 1].push(token);
+            }
+          }
+          if (riceField.length === 1) {
+            return new Sentence(riceField[0]);
+          } else {
+            return new Equation(riceField.map(rices => new Sentence(rices)));
+          }
         },
       },
     };
