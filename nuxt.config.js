@@ -23,7 +23,7 @@ export default {
           { hid: 'og:url', property: 'og:url', content: 'https://catupper.github.io/777evaluator/' },
           { hid: 'og:title', property: 'og:title', content: '胡算器' },
           { hid: 'og:description', property: 'og:description', content: 'b n ワ。' },
-          { hid: 'og:image', property: 'og:image', content: '/777evaluator/img/seven.jpg' },
+          { hid: 'og:image', property: 'og:image', content: 'https://catupper.github.io/777evaluator/img/seven.jpg' },
           { hid: 'twitter:card', content: 'summary'},
         ]
       },
