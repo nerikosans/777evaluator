@@ -1,16 +1,17 @@
 {
   "name": "777evaluator",
   "scripts": {
-      "dev": "nuxt",
-      "build": "nuxt build",      
-      "generate": "nuxt generate",
-      "build:gh-pages": "DEPLOY_ENV=GH_PAGES nuxt build",
-      "generate:gh-pages": "DEPLOY_ENV=GH_PAGES nuxt generate",
-      "start": "nuxt start",
-      "deploy": "DEPLOY_ENV=GH_PAGES push-dir --dir=dist --branch=gh-pages --cleanup"
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "build:gh-pages": "DEPLOY_ENV=GH_PAGES nuxt build",
+    "generate:gh-pages": "DEPLOY_ENV=GH_PAGES nuxt generate",
+    "start": "nuxt start",
+    "deploy": "DEPLOY_ENV=GH_PAGES push-dir --dir=dist --branch=gh-pages --cleanup"
   },
   "dependencies": {
-    "nuxt": "^2.14.6"
+    "nuxt": "^2.14.6",
+    "prettier": "^2.1.2"
   },
   "devDependencies": {
     "push-dir": "^0.4.1"
