@@ -12,7 +12,7 @@
                 <p> 元のョ米: {{expression.raw}} </p>
             </li>
             <li>
-                <p> 胡結果: {{expression.parse(expression.raw).eval()}} </p>
+                <p> 胡結果: {{expression.calc(expression.raw)}} </p>
             </li>
         </ul>
     </div>
@@ -96,8 +96,17 @@ data () {
             return new Yu(Math.min(this.contents + 1, 2));
         }
         toString(){
+            if(this.contesnts < 0)return "X";           
             return ["7","牧","^^"][this.contents];
         }
+    }
+
+    class Daniel{
+        constructor(){}
+        eval(){return this;}
+        hasTwo(){return false;}
+        lift(){return this;}
+        toString(){return "D";}
     }
 
     class ParseError{
@@ -109,7 +118,11 @@ data () {
         expression: {
         // 初期値を入れる
         raw: '',
-        eq: new Round(new Equation(new Yu(0), new Yu(0))),
+        calc: function(str){
+            var expr = this.parse(str).eval().toString();
+            if(expr.includes("D"))return "(´∀｀*)ｳﾌﾌ";
+            else return expr;
+        },
         parse: function(str){
                 var stack = [];
                 var frontier = [];
@@ -131,6 +144,7 @@ data () {
                         case ')':
                             if(stack.length == 0)return new ParseError("Parse Error: 丸はしっかり閉じましょう");
                             var tmp = stack.pop();
+                            if(frontier.length > 0 && (frontier[0] == '=' || frontier[frontier.length-1] == '='))return new ParseError("Parse Error: 端っこに=は置けません");                
                             var eq_pos = frontier.findIndex(x=>x=='=');
                             if(eq_pos == -1){
                                 tmp.push(new Round(new Sentence(frontier)));
@@ -138,7 +152,7 @@ data () {
                             else{
                                 var lhs = frontier.slice(0, eq_pos);
                                 var rhs = frontier.slice(eq_pos+1);
-                                if(rhs.some(x=>x=='='))return new ParseError("(´∀｀*)ｳﾌﾌ");
+                                if(rhs.some(x=>x=='='))return new Daniel();
                                 tmp.push(new Round(new Equation(new Sentence(lhs), new Sentence(rhs))));
                             }
                             frontier = tmp;
@@ -148,14 +162,15 @@ data () {
                     }
                 }
                 console.log(frontier);
-                if(stack.length > 0)return new ParseError("丸はしっかり閉じましょう");
+                if(stack.length > 0)return new ParseError("Parse Error: 丸はしっかり閉じましょう");
+                if(frontier.length > 0 && (frontier[0] == '=' || frontier[frontier.length-1] == '='))return new ParseError("Parse Error: 端っこに=は置けません");
                 var eq_pos = frontier.findIndex(x=>x=='=');
                 if(eq_pos == -1)return new Sentence(frontier);
                 else{
                     console.log(lhs);
                     var lhs = frontier.slice(0, eq_pos);
-                    var rhs = frontier.slice(eq_pos+1);
-                    if(rhs.some(x=>x=='='))return new ParseError("(´∀｀*)ｳﾌﾌ");
+                    var rhs = frontier.slice(eq_pos+1);                    
+                    if(rhs.some(x=>x=='='))return new Daniel();
                     return new Equation(new Sentence(lhs), new Sentence(rhs));
                 }
             }
