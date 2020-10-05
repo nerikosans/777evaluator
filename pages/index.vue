@@ -3,51 +3,35 @@
     <form @submit.prevent>
       <label>
         ョ米
-        <input v-model="expression.raw" type="text">
+        <input v-model="expression.raw" type="text" />
       </label>
     </form>
     <ul class="input_buttons">
       <li>
-        <button class="ui_button" @click="expression.raw += '7'">
-          7
-        </button>
+        <button class="ui_button" @click="expression.raw += '7'">7</button>
       </li>
       <li>
-        <button class="ui_button" @click="expression.raw += '^^'">
-          ^^
-        </button>
+        <button class="ui_button" @click="expression.raw += '^^'">^^</button>
       </li>
       <li>
-        <button class="ui_button" @click="expression.raw += '牧'">
-          牧
-        </button>
+        <button class="ui_button" @click="expression.raw += '牧'">牧</button>
       </li>
       <li>
-        <button class="ui_button" @click="expression.raw += '('">
-          (
-        </button>
+        <button class="ui_button" @click="expression.raw += '('">(</button>
       </li>
       <li>
-        <button class="ui_button" @click="expression.raw += ')'">
-          )
-        </button>
+        <button class="ui_button" @click="expression.raw += ')'">)</button>
       </li>
       <li>
-        <button class="ui_button" @click="expression.raw += '='">
-          =
-        </button>
+        <button class="ui_button" @click="expression.raw += '='">=</button>
       </li>
     </ul>
     <ul class="control_buttons">
       <li>
-        <button class="ui_button" @click="expression.backspace()">
-          Del
-        </button>
+        <button class="ui_button" @click="expression.backspace()">Del</button>
       </li>
       <li>
-        <button class="ui_button" @click="expression.clear()">
-          Clear
-        </button>
+        <button class="ui_button" @click="expression.clear()">Clear</button>
       </li>
     </ul>
     <ul>
