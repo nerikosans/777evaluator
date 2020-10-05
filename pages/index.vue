@@ -5,8 +5,41 @@
         ョ米
         <input type="text" v-model="expression.raw" />
       </label>
-      <button type="submit">胡す</button>
     </form>
+    <ul class="input_buttons">
+      <li>
+        <button class="ui_button" v-on:click="expression.raw += '7'">7</button>
+      </li>
+      <li>
+        <button class="ui_button" v-on:click="expression.raw += '^^'">
+          ^^
+        </button>
+      </li>
+      <li>
+        <button class="ui_button" v-on:click="expression.raw += '牧'">
+          牧
+        </button>
+      </li>
+      <li>
+        <button class="ui_button" v-on:click="expression.raw += '('">(</button>
+      </li>
+      <li>
+        <button class="ui_button" v-on:click="expression.raw += ')'">)</button>
+      </li>
+      <li>
+        <button class="ui_button" v-on:click="expression.raw += '='">=</button>
+      </li>
+    </ul>
+    <ul class="control_buttons">
+      <li>
+        <button class="ui_button" v-on:click="expression.backspace()">
+          Del
+        </button>
+      </li>
+      <li>
+        <button class="ui_button" v-on:click="expression.clear()">Clear</button>
+      </li>
+    </ul>
     <ul>
       <li>
         <p>元のョ米: {{ expression.raw }}</p>
@@ -143,6 +176,21 @@ export default {
           if (expr.includes('D')) return '(´∀｀*)ｳﾌﾌ';
           else return expr;
         },
+        backspace() {
+          if (this.raw.length === 0) {
+            return;
+          }
+
+          if (this.raw.endsWith('^^')) {
+            this.raw = this.raw.slice(0, this.raw.length - 2);
+            return;
+          }
+
+          this.raw = this.raw.slice(0, this.raw.length - 1);
+        },
+        clear() {
+          this.raw = '';
+        },
         parse: function (str) {
           var stack = [];
           var frontier = [];
@@ -219,3 +267,33 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.input_buttons {
+  list-style: none;
+
+  width: 300px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.input_buttons > li,
+.control_buttons > li {
+  margin: 0 10px;
+}
+
+.ui_button {
+  padding: 0 10px;
+  height: 30px;
+}
+
+.control_buttons {
+  list-style: none;
+
+  width: 300px;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+}
+</style>
