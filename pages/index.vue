@@ -14,23 +14,8 @@
       </div>
     </div>
     <ul class="input_buttons">
-      <li>
-        <button class="ui_button" @click="expression.raw += '7'">7</button>
-      </li>
-      <li>
-        <button class="ui_button" @click="expression.raw += '^^'">^^</button>
-      </li>
-      <li>
-        <button class="ui_button" @click="expression.raw += '牧'">牧</button>
-      </li>
-      <li>
-        <button class="ui_button" @click="expression.raw += '('">(</button>
-      </li>
-      <li>
-        <button class="ui_button" @click="expression.raw += ')'">)</button>
-      </li>
-      <li>
-        <button class="ui_button" @click="expression.raw += '='">=</button>
+      <li v-for="k in expression.uiKeys" :key="k">
+        <button class="ui_button" @click="expression.raw += k">{{ k }}</button>
       </li>
     </ul>
     <ul class="control_buttons">
@@ -205,6 +190,7 @@ export default {
       expression: {
         raw: '',
         isResultError: false,
+        uiKeys: ['7', '^^', '牧', '(', ')', '='],
         calc(str: string): string {
           const parseResult = this.parse(str);
           const expr = parseResult.eval().toString();
